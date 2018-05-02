@@ -215,7 +215,7 @@ int main ( void )
     puts("AFTER RECOVERY");
     printf ( "\n" );
     printf ( "Almeida et al.,\n \tJournal of Physics: \n\tConference Series 285 (2011) 012038 \n\tdoi:10.1088/1742-6596/285/1/012038:\n" );
-    printf ("Modeling Pattern Formation in Skin Diseases by a Cellular Automaton \n \t Journal of Investigative Dermatology (2013) 133, 567–571; doi:10.1038/jid.2012.321; published online 30 August 2012");
+    printf ("Modeling Pattern Formation in Skin Diseases by a Cellular Automaton \n \t Journal of Investigative Dermatology (2013) 133, 567–571\n\t doi:10.1038/jid.2012.321 \n\t published online 30 August 2012");
     printf ( "\n" );
     timestamp ( );
     timersub(&stop_time, &start_time, &elapsed_time);
