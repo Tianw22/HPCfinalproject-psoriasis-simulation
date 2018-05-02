@@ -57,9 +57,8 @@ int main ( void )
 
     gettimeofday(&start_time,NULL);
 
-    omp_set_num_threads(4);
+    omp_set_num_threads(16);
     /* Initialize skin -- no lesion yet */
-    // #pragma omp parallel for
     for ( j = 0; j < ny; j++ )
     {
         for ( i = 0; i < nx; i++ )
@@ -88,38 +87,39 @@ int main ( void )
 
     /* Start a lesion in the middle of the grid */
 
-    /* Constant source lesion */ //   tnew[nx/2][ny/2].B = 1;
+    /* Constant source lesion */ 
     tnew[nx/2][ny/2].STATE = 'D';
-
 
     showpsoriasis(nx,ny,tnew);
 
     /* Let it develop */
+
     int it;
 
     for (it=0 ;it<NSTEPS ;it++ )
     {
 
         /* Save the current lesion state. */
+      
         for ( j = 0; j < ny; j++ )
         {
-            #pragma omp parallel for
+            #pragma omp parallel for private(i) reduction(max:it) schedule(dynamic)
             for ( i = 0; i < nx; i++ )
             {
                 t[i][j].STATE = tnew[i][j].STATE;
             }
         }
 
-        //      memcpy(&t,&tnew,sizeof(tnew));
-    //          memcpy(t,tnew,sizeof(tnew));
         /*Scan for damaged neighbors.*/
+
         for ( j = 1; j < ny-1; j++ )
         {
-            #pragma omp parallel for
+            #pragma omp parallel for private(i) reduction(max:it) schedule(dynamic)
             for ( i = 1; i < nx-1; i++ )
             {
                 //If a cell is damaged see if it continues developing
                 //otherwise the lesion goes out.
+               
                 if ( t[i][j].STATE == 'D' )
                 {
                     if (t[i][j].B < (double) rand() /RAND_MAX)
@@ -212,11 +212,10 @@ int main ( void )
     }
     gettimeofday(&stop_time,NULL);
 
-    puts("AFTER LESION");
-    //showpsoriasis_persist(nx,ny,tnew);
+    puts("AFTER RECOVERY");
     printf ( "\n" );
-    //printf ( "Almeida et al.,\n \tJournal of Physics: \n\tConference Series 285 (2011) 012038 \n\tdoi:10.1088/1742-6596/285/1/012038:\n" );
-
+    printf ( "Almeida et al.,\n \tJournal of Physics: \n\tConference Series 285 (2011) 012038 \n\tdoi:10.1088/1742-6596/285/1/012038:\n" );
+    printf ("Modeling Pattern Formation in Skin Diseases by a Cellular Automaton \n \t Journal of Investigative Dermatology (2013) 133, 567–571; doi:10.1038/jid.2012.321; published online 30 August 2012")
     printf ( "\n" );
     timestamp ( );
     timersub(&stop_time, &start_time, &elapsed_time);
